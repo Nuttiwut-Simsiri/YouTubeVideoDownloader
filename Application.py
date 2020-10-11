@@ -1,7 +1,6 @@
-from os.path import join
 import sys
 from os import path
-from PyQt5 import uic
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QTimer
 from PyQt5.QtWidgets import (
     QApplication, 
     QMainWindow, 
@@ -11,36 +10,82 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QTextEdit,
 )
-
-import win32clipboard
+from ui.pyScript.ui_yt_vd import Ui_MainWindow
 from pytube import YouTube
 from pytube.cli import on_progress
 from pprint import pprint
 from re import findall
 import math
 
-class YouTubeVideoDownLoader(QMainWindow):
+class SearchThread(QThread):
+    streamSignal = pyqtSignal(list)
+    ytObjectSignal = pyqtSignal(object)
+    downloadInfo = pyqtSignal(str)
+
+    def __init__(self, textEdit):
+        super().__init__()
+        self.url = ''
+        self.waitFlg = 0
+        self.textEdit = textEdit
+
+    def setUrl(self, newurl):
+        self.url = newurl
+        self.waitFlg = 1
+
+    def run(self):
+        while 1:
+            if self.waitFlg:
+                yt = YouTube(self.url, on_progress_callback=self.showDownloadProgress)
+                self.streamSignal.emit(yt.streams.filter(file_extension='mp4').all())
+                self.ytObjectSignal.emit(yt)
+                self.waitFlg = 0
+
+            self.msleep(50)
+
+    
+    def setVideoSize(self, videoSize):
+        self.videoSize = videoSize
+    
+    def showDownloadProgress(self, chunk: bytes, file_handler, bytes_remaining: int):
+        percent = round(100 - ((100 * bytes_remaining)/self.videoSize),2)
+        if percent%10 == 0:
+            self.downloadInfo.emit(f'Downloading {percent}%')
+
+class YouTubeVideoDownLoader(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
-        self.uic = uic.loadUi(path.abspath('ui/yt-vd.ui'), self)
+        self.setupUi(self)
         self.SAVE_PATH = path.abspath('./downloads')
-        self.init_ui()
+        self.setupGUIConnect()
         
 
-    def init_ui(self):
-        self.searchButton = self.findChild(QPushButton, 'searchBtn')
-        self.searchButton.clicked.connect(self.onClickSearchVideo)
-        self.urlInput = self.findChild(QLineEdit, 'url')
-        self.availableFormatMenu = self.findChild(QComboBox, 'available_format') 
-        self.browseButton = self.findChild(QPushButton, 'browseBtn')
-        self.browseButton.clicked.connect(self.getFolder)
-        self.saveFolder = self.findChild(QLineEdit, 'savePath')
-        self.saveFolder.setText(self.SAVE_PATH)
-        self.downloadButton = self.findChild(QPushButton, 'donloadBtn')
-        self.downloadButton.clicked.connect(self.downloadVideo)
-        self.donwloadInfo = self.findChild(QTextEdit, 'textEdit')
+    def setupGUIConnect(self):
+        self.searchBtn.clicked.connect(self.handleSearch)
+        self.browseBtn.clicked.connect(self.getFolder)
+        self.downloadBtn.clicked.connect(self.downloadVideo)
+        self.searchTh = SearchThread(self.textEdit)
+        self.searchTh.start()
+        self.searchTh.streamSignal.connect(self.setComboBoxItems)
+        self.searchTh.ytObjectSignal.connect(self.setYT)
+        self.searchTh.downloadInfo.connect(self.setDownloadinfo)
+        self.availableFormats = []
 
+
+    @pyqtSlot(str)
+    def setDownloadinfo(self, str):
+        print(str)
+        self.textEdit.setText(str)
+
+    @pyqtSlot(object)
+    def setYT(self, yt):
+        self.yt = yt
+
+    def handleSearch(self):
+        self.availableFormats = []
+        parsedURL = self.url.text().split('&')[0]
+        self.searchTh.setUrl(parsedURL)
+        
     def parseSteamTag(self, tag):
         result = {}
         tagObj = findall(r'\w+=.+"', tag)
@@ -51,38 +96,24 @@ class YouTubeVideoDownLoader(QMainWindow):
                 result[tag_name] = value.replace('"','')
         return result
 
-    def createComboBoxItem(self, streams):
+    @pyqtSlot(list)
+    def setComboBoxItems(self, streams):
         for stream in streams:
             streamDict = self.parseSteamTag(str(stream))
-            print(streamDict)
             self.availableFormats.append(streamDict)
             if streamDict['type'] == 'video':
-                self.availableFormatMenu.addItem(f'Type: {streamDict["mime_type"]}, Video Resolution: {streamDict["res"]}, fps:{streamDict["fps"]}')
+                self.available_format.addItem(f'Type: {streamDict["mime_type"]}, Video Resolution: {streamDict["res"]}, fps:{streamDict["fps"]}')
             else:
-                self.availableFormatMenu.addItem(f'Type: {streamDict["mime_type"]}, Audio Bitrate: {streamDict["abr"]}')
+                self.available_format.addItem(f'Type: {streamDict["mime_type"]}, Audio Bitrate: {streamDict["abr"]}')
 
     
     def getFolder(self):
         folderName = QFileDialog.getExistingDirectory(
             self, 'Select a directory', self.SAVE_PATH)
         if folderName:
-            self.saveFolder.setText(folderName)
+            self.savePath.setText(folderName)
         else:
-            self.saveFolder.setText(self.SAVE_PATH)
-
-    def onClickSearchVideo(self):
-        try:
-            self.availableFormats = []
-            self.yt = YouTube(self.urlInput.text(),  on_progress_callback=self.showDownloadProgress)
-            print('Title :', self.yt.title)
-            print('Views :', self.yt.views)
-            print('Length :', self.yt.length)
-
-            self.createComboBoxItem(self.yt.streams.filter(progressive=True).all())
-        except Exception as e: 
-            print("Error",e) #to handle exception 
-            input('Hit Enter to exit')
-            exit(0)
+            self.savePath.setText(self.SAVE_PATH)
     
     def sizeof_fmt(num, suffix='B'):
         magnitude = int(math.floor(math.log(num, 1024)))
@@ -91,31 +122,24 @@ class YouTubeVideoDownLoader(QMainWindow):
             return '{:.1f}{}{}'.format(val, 'Yi', suffix)
         return '{:3.1f}{}{}'.format(val, ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi'][magnitude], suffix)
 
-
-    def showDownloadProgress(self, chunk: bytes, file_handler, bytes_remaining: int):
-        percent = round(100 - ((100 * bytes_remaining)/self.videoSize),2)
-        print(f'Downloading {percent}%')
-        self.donwloadInfo.setText(f'Downloading {percent}%')
-
-
     def downloadVideo(self):
-        if self.availableFormatMenu:
-            selIndex = self.availableFormatMenu.currentIndex()
+        if self.available_format:
+            selIndex = self.available_format.currentIndex()
             videoInfo = self.availableFormats[selIndex]
             video = self.yt.streams.get_by_itag(videoInfo['itag'])
             try:
                 videoTitle = video.title
                 print(video.title, video.default_filename)
-                self.videoSize = int(video.filesize)
+                self.searchTh.setVideoSize(int(video.filesize))
             except Exception as e:
                 print(e)
                 videoTitle = self.yt.title
-                self.videoSize = 1
+                self.searchTh.setVideoSize(1)
                 
-            path = self.saveFolder.text()
+            path = self.savePath.text()
             print('\nDownloading--- '+videoTitle+' into location : '+path)
-            self.donwloadInfo.setText('\nDownloading--- '+videoTitle+' into location : '+path)
-            video.download(output_path=path, filename=f'{videoTitle}-{videoInfo["res"]}.{videoInfo["fps"]}')
+            self.textEdit.setText('\nDownloading--- '+videoTitle+' into location : '+path)
+            QTimer.singleShot(0, lambda: video.download(output_path=path, filename=f'{videoTitle}-{videoInfo["res"]}.{videoInfo["fps"]}'))
 
 
 if __name__ == "__main__":

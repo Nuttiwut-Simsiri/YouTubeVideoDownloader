@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>922</width>
-    <height>703</height>
+    <width>720</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,15 +24,16 @@
   </property>
   <property name="font">
    <font>
-    <family>Leelawadee UI</family>
-    <pointsize>10</pointsize>
+    <family>Yu Gothic UI</family>
+    <pointsize>16</pointsize>
    </font>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color:white;</string>
+   <string notr="true">background-color:rgb(0, 0, 18);
+color:white;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
@@ -42,6 +43,21 @@
     </sizepolicy>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_5">
+    <property name="spacing">
+     <number>20</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>30</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>30</number>
+    </property>
     <item>
      <widget class="QFrame" name="frame_3">
       <property name="frameShape">
@@ -51,8 +67,14 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>15</number>
+       </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>20</number>
+         </property>
          <item>
           <widget class="QLabel" name="label">
            <property name="sizePolicy">
@@ -61,14 +83,20 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <family>Leelawadee UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">background-color: rgb(15, 15, 48);</string>
            </property>
            <property name="text">
-            <string>YouTube URL</string>
+            <string>YouTube URL :</string>
            </property>
            <property name="textFormat">
             <enum>Qt::RichText</enum>
@@ -83,6 +111,12 @@
          </item>
          <item>
           <widget class="QLineEdit" name="url">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
@@ -96,7 +130,10 @@
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true">background-color:white;</string>
+            <string notr="true">background-color:rgb(20, 20, 62);
+color:rgb(203, 203, 203);
+border-radius: 5px;
+padding-left: 10px;</string>
            </property>
            <property name="text">
             <string>https://www.youtube.com/watch?v=Y7_eTjlXzrk</string>
@@ -108,11 +145,27 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Leelawadee UI</family>
-             <pointsize>11</pointsize>
+             <pointsize>12</pointsize>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(226, 0, 0);
+border-radius:5px;</string>
            </property>
            <property name="text">
             <string>Search</string>
@@ -123,8 +176,23 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>30</number>
+         </property>
          <item>
           <widget class="QLabel" name="label_2">
+           <property name="maximumSize">
+            <size>
+             <width>130</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Leelawadee UI</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
@@ -138,7 +206,7 @@
             <enum>Qt::RichText</enum>
            </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
            </property>
            <property name="wordWrap">
             <bool>false</bool>
@@ -147,11 +215,21 @@
          </item>
          <item>
           <widget class="QComboBox" name="available_format">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Leelawadee UI</family>
-             <pointsize>12</pointsize>
+             <pointsize>14</pointsize>
             </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color:rgb(20, 20, 62);
+padding-left:20px;</string>
            </property>
           </widget>
          </item>
@@ -159,8 +237,17 @@
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>20</number>
+         </property>
          <item>
           <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <family>Leelawadee UI</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
@@ -183,6 +270,12 @@
          </item>
          <item>
           <widget class="QLineEdit" name="savePath">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>40</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <family>Leelawadee UI</family>
@@ -190,12 +283,40 @@
             </font>
            </property>
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">border:none;
+background-color:rgb(20, 20, 62);
+border-radius:5px;
+padding-left:10px;</string>
+           </property>
+           <property name="text">
+            <string>asdadsadsa</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="browseBtn">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>40</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Leelawadee UI</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(226, 0, 0);
+border-radius:5px;</string>
+           </property>
            <property name="text">
             <string>Browse</string>
            </property>
@@ -215,6 +336,12 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>50</number>
+       </property>
+       <property name="rightMargin">
+        <number>50</number>
+       </property>
        <item>
         <widget class="QPushButton" name="donloadBtn">
          <property name="enabled">
@@ -226,14 +353,25 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>40</height>
+          </size>
+         </property>
          <property name="font">
           <font>
            <family>Leelawadee UI</family>
            <pointsize>16</pointsize>
           </font>
          </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(211, 0, 0);
+border-radius:5px;
+</string>
+         </property>
          <property name="text">
-          <string>Start Download</string>
+          <string>DOWNLOAD</string>
          </property>
         </widget>
        </item>
@@ -249,8 +387,14 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>20</number>
+       </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <property name="spacing">
+          <number>35</number>
+         </property>
          <item>
           <widget class="QLabel" name="label_3">
            <property name="sizePolicy">
@@ -259,6 +403,12 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="font">
+            <font>
+             <family>Leelawadee</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
@@ -266,7 +416,7 @@
             <string notr="true"/>
            </property>
            <property name="text">
-            <string>Download Info</string>
+            <string>Status</string>
            </property>
            <property name="textFormat">
             <enum>Qt::RichText</enum>
@@ -286,6 +436,18 @@
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>Terminal</family>
+             <pointsize>14</pointsize>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">border:none;
+background-color:rgb(20, 20, 62);
+border-radius:5px;
+</string>
            </property>
           </widget>
          </item>
